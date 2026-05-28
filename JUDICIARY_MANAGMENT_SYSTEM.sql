@@ -149,7 +149,7 @@ SET FOREIGN_KEY_CHECKS = 1;
 select * from hearing;
 select * from `Case`;
 select * from judge;
-SELECT * FROM ADMINS;
+SELECT * FROM ADMIN;
 
 
 

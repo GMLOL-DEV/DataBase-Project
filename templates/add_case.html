@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Case - Judicial Case Management</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-brand">
+            <h2>⚖️ Judicial CMS - Admin</h2>
+        </div>
+        <div class="nav-user">
+            <span>Welcome, {{ session.full_name }}</span>
+            <a href="{{ url_for('logout') }}" class="btn btn-sm btn-danger">Logout</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="sidebar">
+            <ul class="sidebar-menu">
+                <li><a href="{{ url_for('admin_dashboard') }}">📊 Dashboard</a></li>
+                <li><a href="{{ url_for('view_cases') }}">📁 View Cases</a></li>
+                <li><a href="{{ url_for('add_case') }}" class="active">➕ Add Case</a></li>
+                <li><a href="{{ url_for('view_judges') }}">👨‍⚖️ View Judges</a></li>
+                <li><a href="{{ url_for('add_judge') }}">➕ Add Judge</a></li>
+            </ul>
+        </div>
+
+        <div class="main-content">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            <h1>Add New Case</h1>
+            <p class="subtitle">Register a new legal case in the system</p>
+
+            <form method="POST" action="{{ url_for('add_case') }}" enctype="multipart/form-data" class="form-container">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="case_number">Case Number: *</label>
+                        <input type="text" name="case_number" id="case_number" required placeholder="e.g., CRM/2024/0001">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="case_type">Case Type: *</label>
+                        <select name="case_type" id="case_type" required>
+                            <option value="">Select Type</option>
+                            <option value="Criminal">Criminal</option>
+                            <option value="Civil">Civil</option>
+                            <option value="Family">Family</option>
+                            <option value="Corporate">Corporate</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="case_title">Case Title: *</label>
+                    <input type="text" name="case_title" id="case_title" required placeholder="e.g., State vs John Doe">
+                </div>
+
+                <div class="form-group">
+                    <label for="description">Description:</label>
+                    <textarea name="description" id="description" rows="4" placeholder="Enter case description..."></textarea>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="plaintiff_name">Plaintiff Name: *</label>
+                        <input type="text" name="plaintiff_name" id="plaintiff_name" required placeholder="Name of plaintiff">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="defendant_name">Defendant Name: *</label>
+                        <input type="text" name="defendant_name" id="defendant_name" required placeholder="Name of defendant">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="filing_date">Filing Date: *</label>
+                        <input type="date" name="filing_date" id="filing_date" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="priority">Priority: *</label>
+                        <select name="priority" id="priority" required>
+                            <option value="Medium">Medium</option>
+                            <option value="High">High</option>
+                            <option value="Low">Low</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="assigned_judge_id">Assign Judge:</label>
+                    <select name="assigned_judge_id" id="assigned_judge_id">
+                        <option value="">-- Unassigned --</option>
+                        {% for judge in judges %}
+                        <option value="{{ judge.judge_id }}">{{ judge.full_name }} ({{ judge.specialization }})</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="pdf_file">Upload Case Document (PDF):</label>
+                    <input type="file" name="pdf_file" id="pdf_file" accept=".pdf">
+                    <small class="form-text">Optional: Upload case related PDF document</small>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Add Case</button>
+                    <a href="{{ url_for('view_cases') }}" class="btn btn-secondary">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

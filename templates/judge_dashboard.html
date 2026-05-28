@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Judge Dashboard - Judicial Case Management</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-brand">
+            <h2>⚖️ Judicial CMS - Judge Portal</h2>
+        </div>
+        <div class="nav-user">
+            <span>Welcome, {{ session.full_name }}</span>
+            <a href="{{ url_for('logout') }}" class="btn btn-sm btn-danger">Logout</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="sidebar">
+            <ul class="sidebar-menu">
+                <li><a href="{{ url_for('judge_dashboard') }}" class="active">📊 Dashboard</a></li>
+                <li><a href="{{ url_for('judge_my_cases') }}">📁 My Cases</a></li>
+            </ul>
+        </div>
+
+        <div class="main-content">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            <h1>Judge Dashboard</h1>
+            <p class="subtitle">Your Assigned Cases and Hearings</p>
+
+            <!-- Statistics Cards -->
+            <div class="stats-grid">
+                <div class="stat-card total">
+                    <div class="stat-icon">📁</div>
+                    <div class="stat-label">Total Assigned</div>
+                    <div class="stat-value">{{ stats.total_assigned }}</div>
+                </div>
+
+                <div class="stat-card pending">
+                    <div class="stat-icon">⏳</div>
+                    <div class="stat-label">Pending</div>
+                    <div class="stat-value">{{ stats.pending }}</div>
+                </div>
+
+                <div class="stat-card heard">
+                    <div class="stat-icon">👂</div>
+                    <div class="stat-label">Heard</div>
+                    <div class="stat-value">{{ stats.heard }}</div>
+                </div>
+
+                <div class="stat-card review">
+                    <div class="stat-icon">🔍</div>
+                    <div class="stat-label">Under Review</div>
+                    <div class="stat-value">{{ stats.under_review }}</div>
+                </div>
+
+                <div class="stat-card closed">
+                    <div class="stat-icon">✅</div>
+                    <div class="stat-label">Closed</div>
+                    <div class="stat-value">{{ stats.closed }}</div>
+                </div>
+            </div>
+
+            <!-- Upcoming Hearings -->
+            <div class="dashboard-section">
+                <h2>Upcoming Hearings</h2>
+                {% if upcoming_hearings %}
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Case Number</th>
+                            <th>Case Title</th>
+                            <th>Date</th>
+                            <th>Time</th>
+                            <th>Courtroom</th>
+                            <th>Type</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for hearing in upcoming_hearings %}
+                        <tr>
+                            <td>{{ hearing.case_number }}</td>
+                            <td>{{ hearing.case_title }}</td>
+                            <td>{{ hearing.hearing_date }}</td>
+                            <td>{{ hearing.hearing_time }}</td>
+                            <td>{{ hearing.courtroom_number }}</td>
+                            <td><span class="badge badge-info">{{ hearing.hearing_type }}</span></td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% else %}
+                <p class="text-muted">No upcoming hearings scheduled.</p>
+                {% endif %}
+            </div>
+
+            <!-- Recent Cases -->
+            <div class="dashboard-section">
+                <h2>Recent Assigned Cases</h2>
+                {% if recent_cases %}
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Case Number</th>
+                            <th>Case Title</th>
+                            <th>Type</th>
+                            <th>Filing Date</th>
+                            <th>Priority</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for case in recent_cases %}
+                        <tr>
+                            <td>{{ case.case_number }}</td>
+                            <td>{{ case.case_title }}</td>
+                            <td>{{ case.case_type }}</td>
+                            <td>{{ case.filing_date }}</td>
+                            <td><span class="badge badge-{{ case.priority|lower }}">{{ case.priority }}</span></td>
+                            <td><span class="badge badge-{{ case.status|lower|replace(' ', '-') }}">{{ case.status }}</span></td>
+                            <td>
+                                <a href="{{ url_for('judge_case_details', case_id=case.case_id) }}" class="btn btn-sm btn-info">View</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% else %}
+                <p class="text-muted">No cases assigned yet.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

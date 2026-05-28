@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Case Details - Judicial Case Management</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-brand">
+            <h2>⚖️ Judicial CMS - {% if user_type == 'admin' %}Admin{% else %}Judge Portal{% endif %}</h2>
+        </div>
+        <div class="nav-user">
+            <span>Welcome, {{ session.full_name }}</span>
+            <a href="{{ url_for('logout') }}" class="btn btn-sm btn-danger">Logout</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="sidebar">
+            <ul class="sidebar-menu">
+                {% if user_type == 'admin' %}
+                <li><a href="{{ url_for('admin_dashboard') }}">📊 Dashboard</a></li>
+                <li><a href="{{ url_for('view_cases') }}">📁 View Cases</a></li>
+                <li><a href="{{ url_for('add_case') }}">➕ Add Case</a></li>
+                <li><a href="{{ url_for('view_judges') }}">👨‍⚖️ View Judges</a></li>
+                <li><a href="{{ url_for('add_judge') }}">➕ Add Judge</a></li>
+                {% else %}
+                <li><a href="{{ url_for('judge_dashboard') }}">📊 Dashboard</a></li>
+                <li><a href="{{ url_for('judge_my_cases') }}">📁 My Cases</a></li>
+                {% endif %}
+            </ul>
+        </div>
+
+        <div class="main-content">
+            <div class="page-header">
+                <h1>Case Details</h1>
+                {% if user_type == 'admin' %}
+                <div>
+                    <a href="{{ url_for('schedule_hearing', case_id=case.case_id) }}" class="btn btn-success">Schedule Hearing</a>
+                    <a href="{{ url_for('view_cases') }}" class="btn btn-secondary">Back to Cases</a>
+                </div>
+                {% else %}
+                <a href="{{ url_for('judge_my_cases') }}" class="btn btn-secondary">Back to My Cases</a>
+                {% endif %}
+            </div>
+
+            <div class="case-details-card">
+                <h2>{{ case.case_number }} - {{ case.case_title }}</h2>
+                
+                <div class="details-grid">
+                    <div class="detail-item">
+                        <strong>Case Type:</strong>
+                        <span class="badge badge-secondary">{{ case.case_type }}</span>
+                    </div>
+                    
+                    <div class="detail-item">
+                        <strong>Status:</strong>
+                        <span class="badge badge-{{ case.status|lower|replace(' ', '-') }}">{{ case.status }}</span>
+                    </div>
+                    
+                    <div class="detail-item">
+                        <strong>Priority:</strong>
+                        <span class="badge badge-{{ case.priority|lower }}">{{ case.priority }}</span>
+                    </div>
+                    
+                    <div class="detail-item">
+                        <strong>Filing Date:</strong>
+                        <span>{{ case.filing_date }}</span>
+                    </div>
+                    
+                    <div class="detail-item">
+                        <strong>Plaintiff:</strong>
+                        <span>{{ case.plaintiff_name }}</span>
+                    </div>
+                    
+                    <div class="detail-item">
+                        <strong>Defendant:</strong>
+                        <span>{{ case.defendant_name }}</span>
+                    </div>
+                    
+                    {% if user_type == 'admin' %}
+                    <div class="detail-item">
+                        <strong>Assigned Judge:</strong>
+                        <span>{{ case.judge_name if case.judge_name else 'Not Assigned' }}</span>
+                    </div>
+                    
+                    <div class="detail-item">
+                        <strong>Created By:</strong>
+                        <span>{{ case.created_by }}</span>
+                    </div>
+                    {% endif %}
+                </div>
+                
+                {% if case.description %}
+                <div class="detail-item full-width">
+                    <strong>Description:</strong>
+                    <p>{{ case.description }}</p>
+                </div>
+                {% endif %}
+                
+                {% if case.remarks %}
+                <div class="detail-item full-width">
+                    <strong>Remarks:</strong>
+                    <p>{{ case.remarks }}</p>
+                </div>
+                {% endif %}
+                
+                {% if case.pdf_document_path %}
+                <div class="detail-item">
+                    <strong>Case Document:</strong>
+                    <a href="{{ url_for('static', filename=case.pdf_document_path) }}" target="_blank" class="btn btn-sm btn-info">📄 View PDF</a>
+                </div>
+                {% endif %}
+            </div>
+
+            <div class="hearings-section">
+                <h2>Hearings History</h2>
+                
+                {% if hearings %}
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Time</th>
+                            <th>Courtroom</th>
+                            <th>Type</th>
+                            <th>Status</th>
+                            <th>Notes</th>
+                            {% if user_type == 'admin' %}
+                            <th>Scheduled By</th>
+                            {% endif %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for hearing in hearings %}
+                        <tr>
+                            <td>{{ hearing.hearing_date }}</td>
+                            <td>{{ hearing.hearing_time }}</td>
+                            <td>{{ hearing.courtroom_number }}</td>
+                            <td><span class="badge badge-info">{{ hearing.hearing_type }}</span></td>
+                            <td><span class="badge badge-{{ hearing.status|lower }}">{{ hearing.status }}</span></td>
+                            <td>{{ hearing.notes if hearing.notes else '-' }}</td>
+                            {% if user_type == 'admin' %}
+                            <td>{{ hearing.scheduled_by }}</td>
+                            {% endif %}
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% else %}
+                <p class="text-muted">No hearings scheduled for this case yet.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Judicial Case Management</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-brand">
+            <h2>⚖️ Judicial CMS - Admin</h2>
+        </div>
+        <div class="nav-user">
+            <span>Welcome, {{ session.full_name }}</span>
+            <a href="{{ url_for('logout') }}" class="btn btn-sm btn-danger">Logout</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="sidebar">
+            <ul class="sidebar-menu">
+                <li><a href="{{ url_for('admin_dashboard') }}" class="active">📊 Dashboard</a></li>
+                <li><a href="{{ url_for('view_cases') }}">📁 View Cases</a></li>
+                <li><a href="{{ url_for('add_case') }}">➕ Add Case</a></li>
+                <li><a href="{{ url_for('view_judges') }}">👨‍⚖️ View Judges</a></li>
+                <li><a href="{{ url_for('add_judge') }}">➕ Add Judge</a></li>
+            </ul>
+        </div>
+
+        <div class="main-content">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            <h1>Admin Dashboard</h1>
+            <p class="subtitle">Overview of Judicial Case Management System</p>
+
+            <!-- Statistics Cards -->
+            <div class="stats-grid">
+                <div class="stat-card pending">
+                    <div class="stat-icon">⚖️</div>
+                    <div class="stat-label">Pending Cases</div>
+                    <div class="stat-value">{{ stats.pending_cases }}</div>
+                </div>
+
+                <div class="stat-card judges">
+                    <div class="stat-icon">👨‍⚖️</div>
+                    <div class="stat-label">Total Judges</div>
+                    <div class="stat-value">{{ stats.total_judges }}</div>
+                </div>
+
+                <div class="stat-card total">
+                    <div class="stat-icon">📁</div>
+                    <div class="stat-label">Total Cases</div>
+                    <div class="stat-value">{{ stats.total_cases }}</div>
+                </div>
+
+                <div class="stat-card hearings">
+                    <div class="stat-icon">📅</div>
+                    <div class="stat-label">Hearings Today</div>
+                    <div class="stat-value">{{ stats.hearings_today }}</div>
+                </div>
+
+                <div class="stat-card closed">
+                    <div class="stat-icon">✅</div>
+                    <div class="stat-label">Closed Cases</div>
+                    <div class="stat-value">{{ stats.closed_cases }}</div>
+                </div>
+
+                <div class="stat-card upcoming">
+                    <div class="stat-icon">📆</div>
+                    <div class="stat-label">Upcoming Hearings</div>
+                    <div class="stat-value">{{ stats.upcoming_hearings }}</div>
+                </div>
+            </div>
+
+            <!-- Case Type Distribution -->
+            <div class="dashboard-section">
+                <h2>Cases by Type</h2>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Case Type</th>
+                            <th>Count</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for case_type in case_types %}
+                        <tr>
+                            <td>{{ case_type.case_type }}</td>
+                            <td><strong>{{ case_type.count }}</strong></td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Recent Cases -->
+            <div class="dashboard-section">
+                <h2>Recent Cases</h2>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Case Number</th>
+                            <th>Case Title</th>
+                            <th>Filing Date</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for case in recent_cases %}
+                        <tr>
+                            <td>{{ case.case_number }}</td>
+                            <td>{{ case.case_title }}</td>
+                            <td>{{ case.filing_date }}</td>
+                            <td><span class="badge badge-{{ case.status|lower|replace(' ', '-') }}">{{ case.status }}</span></td>
+                            <td>
+                                <a href="{{ url_for('admin_case_details', case_id=case.case_id) }}" class="btn btn-sm btn-info">View</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Cases - Judicial Case Management</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-brand">
+            <h2>⚖️ Judicial CMS - Admin</h2>
+        </div>
+        <div class="nav-user">
+            <span>Welcome, {{ session.full_name }}</span>
+            <a href="{{ url_for('logout') }}" class="btn btn-sm btn-danger">Logout</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="sidebar">
+            <ul class="sidebar-menu">
+                <li><a href="{{ url_for('admin_dashboard') }}">📊 Dashboard</a></li>
+                <li><a href="{{ url_for('view_cases') }}" class="active">📁 View Cases</a></li>
+                <li><a href="{{ url_for('add_case') }}">➕ Add Case</a></li>
+                <li><a href="{{ url_for('view_judges') }}">👨‍⚖️ View Judges</a></li>
+                <li><a href="{{ url_for('add_judge') }}">➕ Add Judge</a></li>
+            </ul>
+        </div>
+
+        <div class="main-content">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            <div class="page-header">
+                <h1>All Cases</h1>
+                <a href="{{ url_for('add_case') }}" class="btn btn-primary">➕ Add New Case</a>
+            </div>
+
+            <div class="search-box">
+                <input type="text" id="searchCase" placeholder="Search by case number, title, plaintiff, or defendant..." onkeyup="searchTable('searchCase', 'caseTable')">
+            </div>
+
+            <div class="filter-buttons">
+                <button class="btn btn-sm btn-outline" onclick="filterCasesByStatus('all')">All</button>
+                <button class="btn btn-sm btn-outline" onclick="filterCasesByStatus('Pending')">Pending</button>
+                <button class="btn btn-sm btn-outline" onclick="filterCasesByStatus('Heard')">Heard</button>
+                <button class="btn btn-sm btn-outline" onclick="filterCasesByStatus('Under Review')">Under Review</button>
+                <button class="btn btn-sm btn-outline" onclick="filterCasesByStatus('Closed')">Closed</button>
+                <button class="btn btn-sm btn-outline" onclick="filterCasesByStatus('Dismissed')">Dismissed</button>
+            </div>
+
+            <table class="data-table" id="caseTable">
+                <thead>
+                    <tr>
+                        <th>Case Number</th>
+                        <th>Case Title</th>
+                        <th>Type</th>
+                        <th>Plaintiff</th>
+                        <th>Defendant</th>
+                        <th>Filing Date</th>
+                        <th>Judge</th>
+                        <th>Status</th>
+                        <th>Priority</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for case in cases %}
+                    <tr data-status="{{ case.status }}">
+                        <td>{{ case.case_number }}</td>
+                        <td>{{ case.case_title }}</td>
+                        <td><span class="badge badge-secondary">{{ case.case_type }}</span></td>
+                        <td>{{ case.plaintiff_name }}</td>
+                        <td>{{ case.defendant_name }}</td>
+                        <td>{{ case.filing_date }}</td>
+                        <td>{{ case.judge_name if case.judge_name else 'Unassigned' }}</td>
+                        <td><span class="badge badge-{{ case.status|lower|replace(' ', '-') }}">{{ case.status }}</span></td>
+                        <td><span class="badge badge-{{ case.priority|lower }}">{{ case.priority }}</span></td>
+                        <td>
+                            <a href="{{ url_for('admin_case_details', case_id=case.case_id) }}" class="btn btn-sm btn-info">View</a>
+                            <a href="{{ url_for('schedule_hearing', case_id=case.case_id) }}" class="btn btn-sm btn-success">Schedule</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            {% if not cases %}
+            <p class="text-center text-muted">No cases found in the system.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

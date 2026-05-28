@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Judges - Judicial Case Management</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-brand">
+            <h2>⚖️ Judicial CMS - Admin</h2>
+        </div>
+        <div class="nav-user">
+            <span>Welcome, {{ session.full_name }}</span>
+            <a href="{{ url_for('logout') }}" class="btn btn-sm btn-danger">Logout</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="sidebar">
+            <ul class="sidebar-menu">
+                <li><a href="{{ url_for('admin_dashboard') }}">📊 Dashboard</a></li>
+                <li><a href="{{ url_for('view_cases') }}">📁 View Cases</a></li>
+                <li><a href="{{ url_for('add_case') }}">➕ Add Case</a></li>
+                <li><a href="{{ url_for('view_judges') }}" class="active">👨‍⚖️ View Judges</a></li>
+                <li><a href="{{ url_for('add_judge') }}">➕ Add Judge</a></li>
+            </ul>
+        </div>
+
+        <div class="main-content">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            <div class="page-header">
+                <h1>All Judges</h1>
+                <a href="{{ url_for('add_judge') }}" class="btn btn-primary">➕ Add New Judge</a>
+            </div>
+
+            <div class="search-box">
+                <input type="text" id="searchJudge" placeholder="Search by name, username, or specialization..." onkeyup="searchTable('searchJudge', 'judgeTable')">
+            </div>
+
+            <table class="data-table" id="judgeTable">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Full Name</th>
+                        <th>Username</th>
+                        <th>Email</th>
+                        <th>Specialization</th>
+                        <th>Experience</th>
+                        <th>Status</th>
+                        <th>Assigned Cases</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for judge in judges %}
+                    <tr>
+                        <td>{{ judge.judge_id }}</td>
+                        <td>{{ judge.full_name }}</td>
+                        <td>{{ judge.username }}</td>
+                        <td>{{ judge.email }}</td>
+                        <td><span class="badge badge-info">{{ judge.specialization }}</span></td>
+                        <td>{{ judge.experience_years }} years</td>
+                        <td>
+                            <span class="badge badge-{% if judge.status == 'Active' %}success{% elif judge.status == 'Inactive' %}danger{% else %}warning{% endif %}">
+                                {{ judge.status }}
+                            </span>
+                        </td>
+                        <td><strong>{{ judge.case_count }}</strong> cases</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            {% if not judges %}
+            <p class="text-center text-muted">No judges found in the system.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

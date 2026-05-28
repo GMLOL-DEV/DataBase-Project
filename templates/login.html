@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Judicial Case Management System</title>
+    <!-- Google Fonts for professional typography -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary-color: #0f172a; /* Deep Slate/Navy */
+            --accent-color: #115e59;  /* Elegant Dark Emerald Green for Judicial/Pakistani motif */
+            --accent-hover: #134e4a;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --card-bg: rgba(255, 255, 255, 0.88);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body.login-page {
+            /* Smooth background image with a crisp dark overlay */
+            background: linear-gradient(rgba(15, 23, 42, 0.7), rgba(15, 23, 42, 0.8)), 
+                        url('https://images.unsplash.com/photo-1589829545856-d10d557cf95f?q=80&w=1920') no-repeat center center fixed;
+            background-size: cover;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            overflow: hidden; /* Prevents scrolling, forces single-frame layout */
+            position: relative;
+        }
+
+        /* Top Left Pakistan Flag Badge */
+        .pak-flag-badge {
+            position: absolute;
+            top: 24px;
+            left: 24px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 8px 16px;
+            border-radius: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+        }
+
+        .pak-flag-badge .flag {
+            font-size: 22px;
+            line-height: 1;
+        }
+
+        .pak-flag-badge .text {
+            color: #ffffff;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Compact Container for Zoomed-Out Profile */
+        .login-container {
+            width: 100%;
+            max-width: 400px; /* Slightly narrower for a compact frame */
+        }
+
+        /* Compact Centered Table Card */
+        .login-box {
+            background: var(--card-bg);
+            padding: 30px 35px; /* Reduced padding to look tighter and cleaner */
+            border-radius: 12px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .login-header h1 {
+            font-size: 20px; /* Zoomed out size */
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .login-header p {
+            color: var(--text-muted);
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Flash Message Alerts */
+        .alert {
+            padding: 10px 14px;
+            border-radius: 6px;
+            margin-bottom: 16px;
+            font-size: 13px;
+            font-weight: 500;
+            text-align: center;
+        }
+        .alert-error, .alert-danger {
+            background-color: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #fca5a5;
+        }
+        .alert-success {
+            background-color: #dcfce7;
+            color: #166534;
+            border: 1px solid #86efac;
+        }
+
+        /* Form Layout */
+        .login-form {
+            display: flex;
+            flex-direction: column;
+            gap: 14px; /* Tighter gap */
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .form-group label {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--primary-color);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Tighter, crisper Inputs */
+        .form-group input, 
+        .form-group select {
+            width: 100%;
+            padding: 10px 14px;
+            font-size: 14px;
+            border: 1.5px solid #cbd5e1;
+            border-radius: 6px;
+            background-color: #fff;
+            color: var(--text-main);
+            outline: none;
+            transition: all 0.2s ease-in-out;
+        }
+
+        .form-group input:focus, 
+        .form-group select:focus {
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 3px rgba(17, 94, 89, 0.15);
+        }
+
+        /* Professional Premium Button */
+        .btn-primary {
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+            margin-top: 6px;
+            box-shadow: 0 4px 6px -1px rgba(17, 94, 89, 0.2);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--accent-hover);
+        }
+
+        .btn-primary:active {
+            transform: scale(0.99);
+        }
+
+        /* Scaled-down Footer text */
+        .login-footer {
+            text-align: center;
+            margin-top: 24px;
+            border-top: 1px solid #e2e8f0;
+            padding-top: 16px;
+            font-size: 11px;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+
+        .login-footer .text-muted {
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-top: 1px;
+        }
+    </style>
+</head>
+<body class="login-page">
+
+    <!-- Pakistan Flag Top Left Integration -->
+    <div class="pak-flag-badge">
+        <span class="flag">🇵🇰</span>
+        <span class="text">Government of Pakistan</span>
+    </div>
+
+    <div class="login-container">
+        <div class="login-box">
+            <div class="login-header">
+                <h1>⚖️ Judicial Case Management</h1>
+                <p>Secure Login Portal</p>
+            </div>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            <form method="POST" action="{{ url_for('login') }}" class="login-form">
+                <div class="form-group">
+                    <label for="user_type">Login As</label>
+                    <select name="user_type" id="user_type" required>
+                        <option value="">Select User Type</option>
+                        <option value="admin">Administrator</option>
+                        <option value="judge">Judge</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" name="username" id="username" placeholder="Enter your username" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" name="password" id="password" placeholder="Enter your password" required>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-block">Sign In</button>
+            </form>
+
+            <div class="login-footer">
+                <p>Judicial Case Management System v1.0</p>
+                <p class="text-muted">Developed by Muhammad Wahaj Manzar</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
