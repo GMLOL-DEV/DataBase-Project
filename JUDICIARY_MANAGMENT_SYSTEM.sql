@@ -151,5 +151,43 @@ select * from `Case`;
 select * from judge;
 SELECT * FROM ADMIN;
 
+-- DML QUERIES 
+
+-- Get high priority criminal cases
+SELECT 
+    c.case_number,
+    c.case_title,
+    j.full_name,
+    c.filing_date
+FROM `Case` c
+INNER JOIN Judge j ON c.assigned_judge_id = j.judge_id
+WHERE c.priority = 'High' AND c.case_type = 'Criminal';
+
+-- Get cases per judge (IMPORTANT - USED IN DASHBOARD)
+SELECT 
+    j.full_name,
+    COUNT(c.case_id) AS assigned_cases
+FROM Judge j
+LEFT JOIN `Case` c ON j.judge_id = c.assigned_judge_id
+GROUP BY j.judge_id, j.full_name
+ORDER BY assigned_cases DESC;
+
+-- Add a new judge
+INSERT INTO Judge (username, password, full_name, email, phone, specialization, experience_years, assigned_by_admin_id, status, created_at)
+VALUES ('judge_hamza', 'hashed_password_2', 'Justice Hamza Khan', 'hamza@judiciary.gov.pk', '+92-300-7654321', 'Criminal', 15, 1, 'Active', NOW());
+
+-- Delete all dismissed cases
+DELETE FROM `Case` 
+WHERE status = 'Dismissed';
+
+-- Query 4: Get cases assigned to specific judge
+SELECT * FROM `Case` 
+WHERE assigned_judge_id = 5
+ORDER BY filing_date DESC;
+
+
+
+
+
 
 
