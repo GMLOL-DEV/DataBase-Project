@@ -260,6 +260,7 @@ def view_cases():
     
     return render_template('view_cases.html', cases=cases, user_type='admin')
 
+
 @app.route('/admin/case/<int:case_id>')
 def admin_case_details(case_id):
     """View case details"""
@@ -363,6 +364,40 @@ def admin_search_case():
     results = execute_query(query, (case_id, f'%{search_term}%'), fetch=True)
     
     return jsonify(results or [])
+
+# ============================================
+# UPDATE CASE STATUS ROUTE
+# ============================================
+
+@app.route('/admin/update-case-status/<int:case_id>', methods=['POST'])
+def update_case_status(case_id):
+    """Update case status"""
+    if 'user_id' not in session or session.get('user_type') != 'admin':
+        flash('Please login as admin!', 'error')
+        return redirect(url_for('login'))
+    
+    new_status = request.form.get('status')
+    
+    if not new_status:
+        flash('Please select a status!', 'error')
+        return redirect(url_for('admin_case_details', case_id=case_id))
+    
+    # Update case status in database
+    query = """
+    UPDATE `Case`
+    SET status = %s, updated_at = NOW()
+    WHERE case_id = %s
+    """
+    params = (new_status, case_id)
+    
+    result = execute_query(query, params)
+    
+    if result:
+        flash(f'Case status updated to {new_status}!', 'success')
+    else:
+        flash('Error updating case status!', 'error')
+    
+    return redirect(url_for('admin_case_details', case_id=case_id))
 
 # ============================================
 # JUDGE DASHBOARD & ROUTES

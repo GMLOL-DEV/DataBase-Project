@@ -156,6 +156,33 @@
         </div>
     </div>
 
+    <!-- ADDING CASE STATUS CLASS FROM PENDING TO OTHERS -->
+{% if user_type == 'admin' %}
+<div class="case-update-section">
+    <h2>Update Case Status</h2>
+    <form method="POST" action="{{ url_for('update_case_status', case_id=case.case_id) }}" class="form-container">
+        <div class="form-row">
+            <div class="form-group">
+                <label for="status">Change Status: *</label>
+                <select name="status" id="status" required>
+                    <option value="">-- Select Status --</option>
+                    <option value="Pending" {% if case.status == 'Pending' %}selected{% endif %}>Pending</option>
+                    <option value="Heard" {% if case.status == 'Heard' %}selected{% endif %}>Heard</option>
+                    <option value="Under Review" {% if case.status == 'Under Review' %}selected{% endif %}>Under Review</option>
+                    <option value="Closed" {% if case.status == 'Closed' %}selected{% endif %}>Closed</option>
+                    <option value="Dismissed" {% if case.status == 'Dismissed' %}selected{% endif %}>Dismissed</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>&nbsp;</label>
+                <button type="submit" class="btn btn-primary">Update Status</button>
+            </div>
+        </div>
+    </form>
+</div>
+{% endif %}
+
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
 </body>
 </html>
